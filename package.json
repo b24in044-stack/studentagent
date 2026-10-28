@@ -1,0 +1,35 @@
+{
+  "name": "learnpulse",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.15.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "tsc -b && tsc --ignoreConfig --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --esModuleInterop --skipLibCheck server.ts && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 3000",
+    "start": "tsx server.ts --production"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "@vitejs/plugin-react": "latest",
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "lucide-react": "latest",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.4.299",
+    "react": "latest",
+    "react-dom": "latest",
+    "recharts": "latest",
+    "tsx": "^4.23.15",
+    "typescript": "latest",
+    "vite": "latest",
+    "xlsx": "latest"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest"
+  }
+}
