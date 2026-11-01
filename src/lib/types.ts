@@ -4,6 +4,7 @@ export type StudentRecord = {
   id: string;
   name: string;
   rollNo: string;
+  email?: string;
   attendance?: number;
   marks: Record<string, number>;
 };
@@ -16,6 +17,9 @@ export type CourseMaterial = {
   tags: string[];
   source: 'Faculty upload' | 'Demo library';
   excerpt?: string;
+  fileId?: string;
+  sizeBytes?: number;
+  uploadedAt?: string;
 };
 
 export type CourseSection = {
@@ -29,8 +33,17 @@ export type CourseSection = {
   room: string;
   schedule: string;
   subjects: string[];
+  departmentId?: string;
+  btechYear?: number;
+  semester?: number;
+  section?: string;
   students: StudentRecord[];
   materials: CourseMaterial[];
+  cohortSummary?: {
+    studentCount: number;
+    overallAverage?: number;
+    subjectAverages: Record<string, number>;
+  };
 };
 
 export type StudentInsight = {

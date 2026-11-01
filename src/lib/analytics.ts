@@ -8,10 +8,14 @@ export function studentAverage(student: StudentRecord, subjects: string[]) {
 }
 
 export function classAverage(section: CourseSection) {
-  return average(section.students.map((student) => studentAverage(student, section.subjects)));
+  if (typeof section.cohortSummary?.overallAverage === 'number') return section.cohortSummary.overallAverage;
+  const scoredStudents = section.students.filter((student) => section.subjects.some((subject) => Number.isFinite(student.marks[subject])));
+  return average(scoredStudents.map((student) => studentAverage(student, section.subjects)));
 }
 
 export function subjectAverage(section: CourseSection, subject: string) {
+  const cohortAverage = section.cohortSummary?.subjectAverages[subject];
+  if (typeof cohortAverage === 'number') return cohortAverage;
   return average(section.students.map((student) => student.marks[subject]).filter((value) => Number.isFinite(value)));
 }
 
@@ -28,23 +32,25 @@ export function insightFor(section: CourseSection, student: StudentRecord): Stud
   const bestScore = best?.score ?? 0;
   const weakScore = weak?.score ?? 0;
   const gap = overall - sectionAverage;
-  const group = gap >= 5 ? 'Best performance' : gap <= -5 ? 'Needs focused improvement' : 'Needs a little improvement';
-  const level = overall >= 85 ? 'Excellent' : overall >= 70 ? 'Good' : overall >= 50 ? 'Needs Improvement' : 'At Risk';
+  const group = !ranked.length ? 'No marks' : gap >= 5 ? 'Best performance' : gap <= -5 ? 'Needs focused improvement' : 'Needs a little improvement';
+  const level = !ranked.length ? 'No data' : overall >= 85 ? 'Excellent' : overall >= 70 ? 'Good' : overall >= 50 ? 'Needs Improvement' : 'At Risk';
   const strengths = best
     ? [best.score >= best.average ? `Strong in ${best.subject} (${best.score.toFixed(1)}%), above the section subject average.` : `Most confident area: ${best.subject} (${best.score.toFixed(1)}%).`]
-    : ['Upload marks for this student to calculate strengths.'];
+    : [];
   const weaknesses = weak
     ? [weak.score < weak.average ? `Needs improvement in ${weak.subject} (${weak.score.toFixed(1)}%), below the section subject average.` : `Keep building consistency in ${weak.subject} (${weak.score.toFixed(1)}%).`]
-    : ['No subject marks are available yet.'];
+    : [];
   return {
     overall, classAverage: sectionAverage, gap, group, level, bestSubject, bestScore, weakSubject, weakScore, strengths, weaknesses,
-    recommendation: weak ? `Focus the next study block on ${weak.subject}: review the assigned material, complete two practice sets, and ask faculty for feedback.` : 'Ask faculty to upload the section marks before building a subject study plan.',
+    recommendation: weak ? `Focus the next study block on ${weak.subject}: review the assigned material, complete two practice sets, and ask faculty for feedback.` : 'No subject-based recommendation is available until marks are recorded.',
     attendanceAlert: student.attendance !== undefined && student.attendance < 75 ? `Attendance is ${student.attendance}%, below the 75% monitoring threshold.` : undefined,
   };
 }
 
 export function sectionStats(section: CourseSection) {
-  const values = section.students.map((student) => studentAverage(student, section.subjects));
+  const values = section.students
+    .filter((student) => section.subjects.some((subject) => Number.isFinite(student.marks[subject])))
+    .map((student) => studentAverage(student, section.subjects));
   const classAvg = average(values);
   return {
     average: classAvg,

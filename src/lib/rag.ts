@@ -35,7 +35,7 @@ export function buildLearningContext(section: CourseSection, student: StudentRec
       facultyName: section.faculty, facultyEmail: section.facultyEmail, room: section.room, schedule: section.schedule,
     },
     cohort: {
-      studentCount: section.students.length,
+      studentCount: section.cohortSummary?.studentCount ?? section.students.length,
       overallAverage: Number(classAverage(section).toFixed(2)),
       subjectAverages: Object.fromEntries(section.subjects.map((subject) => [subject, Number(subjectAverage(section, subject).toFixed(2))])),
     },
